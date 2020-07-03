@@ -168,15 +168,15 @@ if __name__ == "__main__":
     fasta_path = 'D:/data/proteome_fasta/UniProt_Mouse_04-17-2019_reversed.fasta'
     protein_dict=read_fasta_info_dict2(fasta_path)
 
-    pep_tsv = 'D:/data/phospho_wang/6_30_search_result/B_wt/peptide.tsv'
+    pep_tsv = 'D:/data/phospho_wang/6_30_search_result/SC_wt/peptide.tsv'
     psm_tsv = 'D:/data/phospho_wang/6_30_search_result/B_wt/psm.tsv'
     peptide_list = peptide_counting(pep_tsv)
     phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
     #print (phos_peptide_list)
 
-    #venn_dict = {'Brain_WT_peptides':peptide_list, 'Brain_WT_phosphopeptides':phos_peptide_list}
-    #venn_diagram_gen(venn_dict,title='Brain WT peptide vs phosphopeptide after phospho-enrichment')
-
+    venn_dict = {'Brain_ko_peptides':peptide_list, 'Brain_ko_phosphopeptides':phos_peptide_list}
+    venn_diagram_gen(venn_dict,title='Brain ko peptide vs phosphopeptide after phospho-enrichment')
+    """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)
     aho_automaton = aho_corasick.automaton_trie(phos_peptide_list)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     id_pep_dict = creat_ID_pep_dict(aho_result,pos_id_dict)
     print(len(id_pep_dict))
     psm_count_dict = psm_reader(psm_tsv)[0]
-    protein_spec_dict = spectra_num_counting(pep_tsv,psm_tsv,fasta_path,reverse=1)
+    protein_spec_dict = spectra_num_counting(pep_tsv,psm_tsv,fasta_path,reverse=1) 
     phosphoprotein_spec_dict = defaultdict(int)
     for phospho_protein in id_pep_dict:
         for pep in id_pep_dict[phospho_protein]:
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     print (phosphoprotein_spec_dict['P28652'],phosphoprotein_spec_dict['P11798'])
 
     df = pd.DataFrame([])
-
+    """
 
     '''
     fig, ax = plt.subplots(1,1,figsize=(10,10))
