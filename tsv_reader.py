@@ -168,8 +168,8 @@ if __name__ == "__main__":
     fasta_path = 'D:/data/proteome_fasta/UniProt_Mouse_04-17-2019_reversed.fasta'
     protein_dict=read_fasta_info_dict2(fasta_path)
 
-    pep_tsv = 'D:/data/phospho_wang/2020-07-14/B_KO_nonenrich/peptide.tsv'
-    psm_tsv = 'D:/data/phospho_wang/2020-07-14/B_KO_nonenrich/psm.tsv'
+    pep_tsv = 'D:/data/phospho_wang/9_17_2019_search_result/B_1/peptide.tsv'
+    psm_tsv = 'D:/data/phospho_wang/9_17_2019_search_result/B_phos_1/psm.tsv'
     peptide_list = peptide_counting(pep_tsv)
     phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
     #print (phos_peptide_list)
