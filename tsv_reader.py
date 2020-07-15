@@ -165,17 +165,20 @@ if __name__ == "__main__":
     print (len(SC_combined_set))
     '''
 
-    fasta_path = 'D:/data/proteome_fasta/UniProt_Mouse_04-17-2019_reversed.fasta'
+    fasta_path = 'D:/data/ext_evo_pj/c_elegans_gbff_reference.fasta'
     protein_dict=read_fasta_info_dict2(fasta_path)
 
-    pep_tsv = 'D:/data/phospho_wang/9_17_2019_search_result/B_1/peptide.tsv'
-    psm_tsv = 'D:/data/phospho_wang/9_17_2019_search_result/B_phos_1/psm.tsv'
-    peptide_list = peptide_counting(pep_tsv)
-    phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
+    pep_tsv = 'D:/data/ext_evo_pj/gb_ref_search_7_7_PXD001723/peptide.tsv'
+    prot_tsv = 'D:/data/ext_evo_pj/gb_ref_search_7_7_PXD001723/protein.tsv'
+    psm_tsv = 'D:/data/ext_evo_pj/gb_ref_search_7_7_PXD001723/psm.tsv'
+    print (len(protein_tsv_reader(prot_tsv)))
+    print (len(spectra_num_counting(pep_tsv,psm_tsv,fasta_path,reverse=0)))
+    #peptide_list = peptide_counting(pep_tsv)
+    #phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
     #print (phos_peptide_list)
 
-    venn_dict = {'Brain_ko_peptides':peptide_list, 'Brain_ko_phosphopeptides':phos_peptide_list}
-    venn_diagram_gen(venn_dict,title='Brain ko peptide vs phosphopeptide before phospho-enrichment')
+    #venn_dict = {'Brain_ko_peptides':peptide_list, 'Brain_ko_phosphopeptides':phos_peptide_list}
+    #venn_diagram_gen(venn_dict,title='Brain ko peptide vs phosphopeptide before phospho-enrichment')
     """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)
