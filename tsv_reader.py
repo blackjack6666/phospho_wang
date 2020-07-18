@@ -150,7 +150,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matplotlib_venn import venn3, venn3_circles
     import pandas as pd
-    from protein_coverage import read_fasta_info_dict2
+    from protein_coverage import read_fasta_info_dict2, fasta_reader
     import seq_operation, aho_corasick
     from multiprocessing_naive_algorithym import creat_pep_ID_dict,creat_ID_pep_dict
     '''
@@ -165,12 +165,12 @@ if __name__ == "__main__":
     print (len(SC_combined_set))
     '''
 
-    fasta_path = 'D:/data/ext_evo_pj/c_elegans_gbff_reference.fasta'
-    protein_dict=read_fasta_info_dict2(fasta_path)
+    fasta_path = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
+    protein_dict=fasta_reader(fasta_path)
 
-    pep_tsv = 'D:/data/ext_evo_pj/gb_ref_search_7_7_PXD001723/peptide.tsv'
-    prot_tsv = 'D:/data/ext_evo_pj/gb_ref_search_7_7_PXD001723/protein.tsv'
-    psm_tsv = 'D:/data/ext_evo_pj/gb_ref_search_7_7_PXD001723/psm.tsv'
+    pep_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/peptide.tsv'
+    prot_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/protein.tsv'
+    psm_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/psm.tsv'
     print (len(protein_tsv_reader(prot_tsv)))
     print (len(spectra_num_counting(pep_tsv,psm_tsv,fasta_path,reverse=0)))
     #peptide_list = peptide_counting(pep_tsv)
