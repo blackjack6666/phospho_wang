@@ -153,6 +153,7 @@ if __name__ == "__main__":
     from protein_coverage import read_fasta_info_dict2, fasta_reader
     import seq_operation, aho_corasick
     from multiprocessing_naive_algorithym import creat_pep_ID_dict,creat_ID_pep_dict
+    import pickle as ppp
     '''
     SC_1_tsv_path = 'D:/data/phospho_wang/9_17_2019_search_result/SC_1/protein.tsv'
     SC_1_protein_set = (protein_tsv_reader(SC_1_tsv_path))  
@@ -173,12 +174,13 @@ if __name__ == "__main__":
     psm_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/psm.tsv'
     print (len(protein_tsv_reader(prot_tsv)))
     print (len(spectra_num_counting(pep_tsv,psm_tsv,fasta_path,reverse=0)))
-    #peptide_list = peptide_counting(pep_tsv)
-    #phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
-    #print (phos_peptide_list)
+    peptide_list = peptide_counting(pep_tsv)
+    phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
+    print (phos_peptide_list)
 
-    #venn_dict = {'Brain_ko_peptides':peptide_list, 'Brain_ko_phosphopeptides':phos_peptide_list}
-    #venn_diagram_gen(venn_dict,title='Brain ko peptide vs phosphopeptide before phospho-enrichment')
+    venn_dict = {'PXD001364': [key for key in ppp.load(open('C:/Users/gao lab computer/PycharmProjects/ms2_spectra/PXD001364_ext_pep_cosScore_dict.p', 'rb'))],
+                 'PXD001723':[key for key in ppp.load(open('C:/Users/gao lab computer/PycharmProjects/ms2_spectra/PXD001723_ext_pep_cosScore_dict.p', 'rb'))]}
+    venn_diagram_gen(venn_dict,title='C_elegans Ext peptides overlap between two PRIDE projects')
     """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)
