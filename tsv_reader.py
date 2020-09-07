@@ -147,6 +147,23 @@ def spectra_num_counting(peptide_tsv, psm_tsv, fasta_path, reverse=0):
 
     return protein_total_spec_count_dict
 
+
+def pep_mod_pep_dict_gen(psm_path,fragpipe_ver=13.0):
+    pep_mod_dict = defaultdict(list)
+    with open(psm_path, 'r') as f:
+        for i in range(1):
+            next(f)
+        for line in f:
+            line_split = line.split('\t')
+            if fragpipe_ver==13.0:
+                pep_seq = line_split[2]
+                mod_pep_seq = line_split[3]
+            else:
+                pep_seq = line_split[1]
+                mod_pep_seq = line_split[2]
+            pep_mod_dict[pep_seq].append(mod_pep_seq)
+    return pep_mod_dict
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matplotlib_venn import venn3, venn3_circles
