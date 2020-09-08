@@ -31,8 +31,8 @@ def ptm_reader(protein_seq_dict,uniprot_id,peptide_tsv,mod=79.9663):
             pep_loc = protein_seq.find(each)
             # positive lookahead for each ptm found from peptide.tsv
             for each_mod in pep_w_mod_dict[each]:
-                ptm_loc_list = [int(each_loc)+pep_loc for each_loc in re.findall(r'\d+(?=[A-Z])',each_mod)]
-                prot_ptm_loc_list+=ptm_loc_list
+                ptm_loc_list = [int(each_loc)+pep_loc-1 for each_loc in re.findall(r'\d+(?=[A-Z])',each_mod)]
+                prot_ptm_loc_list += ptm_loc_list
             protein_ptm_loc_dict[uniprot_id] = prot_ptm_loc_list
 
         else:
@@ -108,7 +108,97 @@ def ptm_sites_counting(matched_pep_list,peptide_tsv,psm_tsv,mod,regex=r'\w\[\d+\
     return PTM_sites_counting
 
 
-#def html_vis(matched_pep_list,protein_seq,uniprot_id,gene_name,output_path,PTM_dict={})
+def gen_cov_graph(peptide_tsv,
+                  psm_tsv,
+                  fasta_path,
+                  Uniprot_name,
+                  Gene_name,
+                  output_filename,
+                  PTM_dict={"S[167]":"Serine phosphorylation",
+                            "T[181]":"Threonine phosphorylation",
+                            'Y[243]':'Tyrosine phosphorylation'},fasta_rev=0):
+    from tsv_reader import psm_reader, peptide_counting
+    from protein_coverage import fasta_reader, read_fasta_info_dict2
+
+    if fasta_rev == 0:
+        uniprot_dict = fasta_reader(fasta_path)
+    else:
+        uniprot_dict = read_fasta_info_dict2(fasta_path)
+
+    pep_list = peptide_counting(peptide_tsv)
+    psm_dict = psm_reader(psm_tsv)[0]
+    string_of_full_protein_sequence = uniprot_dict[Uniprot_name]
+
+    matched_list_of_peptides = uniprot_id_matched_pep_getter(uniprot_dict, pep_list)[Uniprot_name]
+    matched_list_of_psms = [each_pep for each_pep in matched_list_of_peptides for i in range(psm_dict[each_pep])]
+
+    aa_frequency, PTM_loc_list, PTM_sites_counting = freq_array_generator(matched_list_of_psms,
+                                                                          string_of_full_protein_sequence), \
+                                                     ptm_reader(uniprot_dict, Uniprot_name, peptide_tsv)[Uniprot_name], \
+                                                     ptm_sites_counting(matched_list_of_peptides, peptide_tsv, psm_tsv,
+                                                                        mod=79.9663)
+
+    # some required variables from other function
+
+
+    # coverage calculation
+    non_zero = np.count_nonzero(aa_frequency)
+    coverage = float(non_zero)/len(aa_frequency)*100
+
+    # split sequence
+    split_seq = np.arange(0, len(string_of_full_protein_sequence), 50) # 50 amino acids per line on html file
+    split_seq = np.append(split_seq, len(string_of_full_protein_sequence))
+
+    # required stat for color labeling
+    max_freq = np.max(aa_frequency)
+
+    # HTML contents, color markers
+    content = '<!DOCTYPE HTML>\n<html>\n<body>\n<style>\n'
+    div = '#outPopUp { \n\tmargin-right: auto;\n\tmargin-left: auto;\n\twidth: 500px;\n\t}\n'
+    mark = 'mark {\n\tbackground-color: #2C3E50;\n\tcolor: white;\n}\n'
+    mark += 'mark1 {\n\tbackground-color: #2471A3;\n\tcolor: white;\n}\n'
+    mark += 'mark2 {\n\tbackground-color: #AED6F1;\n\tcolor: white;\n}\n'
+    mark += 'mark3 {\n\tbackground-color: #95A5A6;\n\tcolor: white;\n}\n'
+    mark += 'mark4 {\n\tbackground-color: #D7DBDD;\n\tcolor: white;\n}\n'
+    mark += 'mark5 {\n\tbackground-color: white;\n\tcolor: red;\n}\n'
+
+    # HTML content, protein info and color legend
+    protein_info = '<p>The protein\t' + Uniprot_name + '(Gene name:' + Gene_name + ')' + '\thas sequence coverage of: '
+    note = '<p><font size="2">Note*<br>frequency: <mark>color</mark>><mark1>color</mark1>><mark2>color</mark2>><mark3>' \
+           'color</mark3>><mark4>color</mark4></font></p>\n'
+
+    # start writing html script
+    with open(output_filename, 'w') as f:
+        f.write(content+div+mark+'</style>\n\t<div id="outPopUp">\n'+protein_info+'<strong>'+str(coverage)+'%</strong></p>\n'+note+'\n\n<pre>\n\n\n')
+
+        for i in range(len(split_seq)-1):
+            for j in range(split_seq[i],split_seq[i+1]):
+                if j not in PTM_loc_list:
+
+                    if aa_frequency[j] == 0:
+                        f.write(string_of_full_protein_sequence[j])
+                    elif 1 <= aa_frequency[j] < 0.2*max_freq:
+                        f.write('<mark4>'+string_of_full_protein_sequence[j]+'</mark4>')
+                    elif 0.2*max_freq <= aa_frequency[j] < 0.4*max_freq:
+                        f.write('<mark3>'+string_of_full_protein_sequence[j]+'</mark3>')
+                    elif 0.4*max_freq <= aa_frequency[j] < 0.6*max_freq: # color legend changeable
+                        f.write('<mark2>'+string_of_full_protein_sequence[j]+'</mark2>')
+                    elif 0.6*max_freq <= aa_frequency[j] < 0.8*max_freq: # color legend changeable
+                        f.write('<mark1>'+string_of_full_protein_sequence[j]+'</mark1>')
+                    else:
+                        f.write('<mark>'+string_of_full_protein_sequence[j]+'</mark>')
+                else:
+                    f.write('<mark5>'+string_of_full_protein_sequence[j]+'</mark5>')
+
+            f.write('\n')
+        f.write('\n\n</pre>\n')
+        f.write('<pre>PTM sites stats:\n')
+        for PTM in PTM_dict:
+            number_of_each_site = '%s' % PTM_sites_counting[PTM]
+            f.write(PTM+'\t'+PTM_dict[PTM]+':<strong>'+ number_of_each_site+'</strong> times identified\n')
+        f.write('</pre>\n</div>\n</body>\n</html>\n')
+    f.close()
+    return output_filename
 
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
@@ -121,5 +211,13 @@ if __name__=='__main__':
     print (ptm_reader(protein_dict,'P28652',pep_tsv))
     print (pep_mod_pep_dict_gen(psm_tsv)['NSSAITSPK'])
 
-    matched_pep_list = uniprot_id_matched_pep_getter(protein_dict,peptide_list)['P28652']
-    print (ptm_sites_counting(matched_pep_list,pep_tsv,psm_tsv,mod=79.9663))
+    # matched_pep_list = uniprot_id_matched_pep_getter(protein_dict,peptide_list)['P28652']
+    # print (ptm_sites_counting(matched_pep_list,pep_tsv,psm_tsv,mod=79.9663))
+
+    gen_cov_graph(pep_tsv,
+                  psm_tsv,
+                  fasta_file,
+                  'P28652',
+                  'Camk2b',
+                  'P28562_B_phos .html',
+                  fasta_rev=1)
