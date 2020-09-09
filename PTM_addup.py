@@ -146,8 +146,8 @@ def gen_cov_graph(peptide_tsv,
     coverage = float(non_zero)/len(aa_frequency)*100
 
     # split sequence
-    split_seq = np.arange(0, len(string_of_full_protein_sequence), 50) # 50 amino acids per line on html file
-    split_seq = np.append(split_seq, len(string_of_full_protein_sequence))
+    split_seq = range(0, len(string_of_full_protein_sequence)+50, 50) # 50 amino acids per line on html file
+
 
     # required stat for color labeling
     max_freq = np.max(aa_frequency)
