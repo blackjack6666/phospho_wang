@@ -328,17 +328,18 @@ def gen_cov_graph2(pep_list,
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
     from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader
-    fasta_file = 'D:/data/Naba_deep_matrisome/mouse_ecm_costom_proteome_db.fasta'
-    tryp_pep_tsv = 'D:/data/Naba_deep_matrisome/09_10_2020_T_search_result/peptide.tsv'
-    tryp_psm_tsv = 'D:/data/Naba_deep_matrisome/09_10_2020_T_search_result/psm.tsv'
+    fasta_file = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
+    tryp_pep_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/peptide.tsv'
+    tryp_psm_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/psm.tsv'
 
-    chymo_pep_tsv = 'D:/data/Naba_deep_matrisome/09_10_2020_chymoT_search_result/peptide.tsv'
-    chymo_psm_tsv = 'D:/data/Naba_deep_matrisome/09_10_2020_chymoT_search_result/psm.tsv'
-    combined_pep_list = peptide_counting(tryp_pep_tsv)+peptide_counting(chymo_pep_tsv)
+    chymo_pep_tsv = 'D:/data/deep_proteome/20200915_ct_37C_240min/peptide.tsv'
+    chymo_psm_tsv = 'D:/data/deep_proteome/20200915_ct_37C_240min/psm.tsv'
+    tryp_pep_list,ct_pep_list = peptide_counting(tryp_pep_tsv),peptide_counting(chymo_pep_tsv)
+    combined_pep_list = tryp_pep_list+ct_pep_list
     psm_dict = psm_reader(tryp_psm_tsv)[0]
     psm_dict.update(psm_reader(chymo_psm_tsv)[0])
 
-    gen_cov_graph2(combined_pep_list,psm_dict,fasta_file,'P11276','Fn1','P11276_T_CT_combined.html')
+    gen_cov_graph2(ct_pep_list,psm_dict,fasta_file,'P14174','MIF','P14174_ct_37C_240min_9_24.html')
 
     #print (ptm_reader(protein_dict,'P28652',pep_tsv))
     #print (pep_mod_pep_dict_gen(psm_tsv)['NSSAITSPK'])
