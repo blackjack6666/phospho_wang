@@ -101,8 +101,12 @@ def ptm_sites_counting(matched_pep_list,peptide_tsv,psm_tsv,mod,regex=r'\w\[\d+\
             aa_w_mods_list = np.array([re.findall(regex,each_mod_pep)
                                         for each_mod_pep in pep_mod_pep_dict[each_pep]]).flatten()
             print(aa_w_mods_list)
-            for each_aa in aa_w_mods_list:
-                PTM_sites_counting[each_aa]+=1
+            for each_ele in aa_w_mods_list:
+                try:
+                    PTM_sites_counting[each_ele]+=1
+                except TypeError: # some elements in aa_w_mod_list are list
+                    for each_aa in each_ele:
+                        PTM_sites_counting[each_aa]+=1
         else:
             continue
     return PTM_sites_counting
@@ -141,6 +145,7 @@ def gen_cov_graph(peptide_tsv,
 
     pep_list = peptide_counting(peptide_tsv)
     psm_dict = psm_reader(psm_tsv)[0]
+
     string_of_full_protein_sequence = uniprot_dict[Uniprot_name]
 
     matched_list_of_peptides = uniprot_id_matched_pep_getter(uniprot_dict, pep_list)[Uniprot_name]
@@ -151,7 +156,7 @@ def gen_cov_graph(peptide_tsv,
                                                      ptm_reader(uniprot_dict, Uniprot_name, peptide_tsv,mod=mod)[Uniprot_name], \
                                                      ptm_sites_counting(matched_list_of_peptides, peptide_tsv, psm_tsv,
                                                                         mod=mod)
-
+    print (PTM_sites_counting)
     # some required variables from other function
 
 
@@ -328,7 +333,7 @@ def gen_cov_graph2(pep_list,
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
     from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader
-    fasta_file = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
+    fasta_file = 'D:/data/ext_evo_pj/mouse/mouse_ext_W_8_7.fasta'
     tryp_pep_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/peptide.tsv'
     tryp_psm_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/psm.tsv'
 
@@ -339,18 +344,22 @@ if __name__=='__main__':
     psm_dict = psm_reader(tryp_psm_tsv)[0]
     psm_dict.update(psm_reader(chymo_psm_tsv)[0])
 
-    gen_cov_graph2(ct_pep_list,psm_dict,fasta_file,'P14174','MIF','P14174_ct_37C_240min_9_24.html')
+    # gen_cov_graph2(tryp_pep_list,psm_dict,fasta_file,'P04843_W_normal','RPN1','P04843_W_normal_9_28.html')
 
     #print (ptm_reader(protein_dict,'P28652',pep_tsv))
     #print (pep_mod_pep_dict_gen(psm_tsv)['NSSAITSPK'])
 
     # matched_pep_list = uniprot_id_matched_pep_getter(protein_dict,peptide_list)['P28652']
-    # print (ptm_sites_counting(matched_pep_list,pep_tsv,psm_tsv,mod=79.9663))
+    #print (ptm_sites_counting(matched_pep_list,pep_tsv,psm_tsv,mod=79.9663))
 
-    # gen_cov_graph(pep_tsv,
-    #               psm_tsv,
-    #               fasta_file,
-    #               'P11276',
-    #               'Fn1',
-    #               'P11276_chymotrypsin.html',
-    #               fasta_rev=0)
+    pep_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/peptide.tsv'
+    psm_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/psm.tsv'
+
+    gen_cov_graph(pep_tsv,
+                  psm_tsv,
+                  fasta_file,
+                  'P08553_W_normal',
+                  'Nefm',
+                  'P08553_extend.html',
+                  PTM_dict={"S[167]":"Serine phosphorylation"},
+                  fasta_rev=0)
