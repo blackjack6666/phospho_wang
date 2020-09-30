@@ -191,7 +191,7 @@ if __name__ == "__main__":
     # fasta_path = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
     # protein_dict=fasta_reader(fasta_path)
 
-    pep_tsv = 'D:/data/phospho_wang/2020-09-06/result/SC_phos/peptide.tsv'
+    pep_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/peptide.tsv'
     # prot_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/protein.tsv'
     # psm_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/psm.tsv'
     # # print (len(protein_tsv_reader(prot_tsv)))
@@ -201,7 +201,7 @@ if __name__ == "__main__":
     #print (phos_peptide_list)
 
     venn_dict = {'All peptide': peptide_list,'phospho_pep':phos_peptide_list}
-    venn_diagram_gen(venn_dict,title='SC peptide after phosphoenrich')
+    venn_diagram_gen(venn_dict,title='Brain peptides phosphoenrichment')
     """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)
