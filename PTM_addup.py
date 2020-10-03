@@ -333,7 +333,7 @@ def gen_cov_graph2(pep_list,
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
     from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader
-    fasta_file = 'D:/data/ext_evo_pj/mouse/mouse_ext_W_8_7.fasta'
+    fasta_file = 'D:/data/proteome_fasta/uniprot-proteome_UP000000589_mouse.fasta'
     tryp_pep_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/peptide.tsv'
     tryp_psm_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/psm.tsv'
 
@@ -358,8 +358,8 @@ if __name__=='__main__':
     gen_cov_graph(pep_tsv,
                   psm_tsv,
                   fasta_file,
-                  'P08553_W_normal',
-                  'Nefm',
-                  'P08553_extend.html',
-                  PTM_dict={"S[167]":"Serine phosphorylation"},
+                  'P11798',
+                  'Camk2a',
+                  'P11798.html',
+                  PTM_dict={"S[167]":"Serine phosphorylation","T[181]":"Threonine phosphorylation",'Y[243]':'Tyrosine phosphorylation'},
                   fasta_rev=0)

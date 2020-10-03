@@ -168,6 +168,18 @@ def pep_mod_pep_dict_gen(psm_path,fragpipe_ver=13.0):
             pep_mod_dict[pep_seq].append(mod_pep_seq)
     return pep_mod_dict
 
+
+def table_for_PW_analysis(protein_tsv_path):
+    """
+    get a table with each identified protein ID (uniprot) in column 1, spec_count in column 2, # peptides in column 3
+    :param protein_tsv_path:
+    :return:
+    """
+    with open(protein_tsv_path,'r') as f:
+        next(f)
+        return [[line.split('\t')[3], line.split('\t')[5], int(line.split('\t')[17]), int(line.split('\t')[14])] for line in f]
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matplotlib_venn import venn3, venn3_circles
