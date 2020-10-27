@@ -333,9 +333,9 @@ def gen_cov_graph2(pep_list,
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
     from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader
-    fasta_file = 'D:/data/proteome_fasta/uniprot-proteome_UP000000589_mouse.fasta'
-    tryp_pep_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/peptide.tsv'
-    tryp_psm_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_120min/psm.tsv'
+    fasta_file = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
+    tryp_pep_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_240min/peptide.tsv'
+    tryp_psm_tsv = 'D:/data/deep_proteome/20200915_tryp_37C_240min/psm.tsv'
 
     chymo_pep_tsv = 'D:/data/deep_proteome/20200915_ct_37C_240min/peptide.tsv'
     chymo_psm_tsv = 'D:/data/deep_proteome/20200915_ct_37C_240min/psm.tsv'
@@ -344,7 +344,7 @@ if __name__=='__main__':
     psm_dict = psm_reader(tryp_psm_tsv)[0]
     psm_dict.update(psm_reader(chymo_psm_tsv)[0])
 
-    # gen_cov_graph2(tryp_pep_list,psm_dict,fasta_file,'P04843_W_normal','RPN1','P04843_W_normal_9_28.html')
+    gen_cov_graph2(combined_pep_list,psm_dict,fasta_file,'P05386','RPLP1','P05386_comb_240min.html')
 
     #print (ptm_reader(protein_dict,'P28652',pep_tsv))
     #print (pep_mod_pep_dict_gen(psm_tsv)['NSSAITSPK'])
@@ -352,14 +352,14 @@ if __name__=='__main__':
     # matched_pep_list = uniprot_id_matched_pep_getter(protein_dict,peptide_list)['P28652']
     #print (ptm_sites_counting(matched_pep_list,pep_tsv,psm_tsv,mod=79.9663))
 
-    pep_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/peptide.tsv'
-    psm_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/psm.tsv'
-
-    gen_cov_graph(pep_tsv,
-                  psm_tsv,
-                  fasta_file,
-                  'P11798',
-                  'Camk2a',
-                  'P11798.html',
-                  PTM_dict={"S[167]":"Serine phosphorylation","T[181]":"Threonine phosphorylation",'Y[243]':'Tyrosine phosphorylation'},
-                  fasta_rev=0)
+    # pep_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/peptide.tsv'
+    # psm_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/psm.tsv'
+    #
+    # gen_cov_graph(pep_tsv,
+    #               psm_tsv,
+    #               fasta_file,
+    #               'P11798',
+    #               'Camk2a',
+    #               'P11798.html',
+    #               PTM_dict={"S[167]":"Serine phosphorylation","T[181]":"Threonine phosphorylation",'Y[243]':'Tyrosine phosphorylation'},
+    #               fasta_rev=0)
