@@ -58,7 +58,7 @@ def peptide_counting(peptide_tsv_file):
 
 def peptide_phospho_reader(peptide_tsv_file, mod=79.9663): # 79.9663 is the delta mass of phosphorylation on STY
     pep_phos_dict = defaultdict()
-    with open(peptide_tsv_file) as file_open:
+    with open(peptide_tsv_file,'r') as file_open:
         for i in range(1):
             next(file_open)
         for line in file_open:
@@ -72,6 +72,28 @@ def peptide_phospho_reader(peptide_tsv_file, mod=79.9663): # 79.9663 is the delt
                     pep_phos_dict[pep_seq]=regex
     return pep_phos_dict
 
+
+def psm_phospho_reader(psm_tsv_file, mod=79.9663):
+    psm_phos_dict = {}
+    psm_list = []
+    with open(psm_tsv_file,'r') as file_open:
+        for i in range(1):
+            next(file_open)
+        for line in file_open:
+            line_split = line.split('\t')
+            spectrum = line_split[0].split('.')[-2]
+            pep_seq = line_split[2]
+            psm_list.append(pep_seq+'_'+spectrum)
+            pattern = re.compile('\d+\w{1}\(' + str(mod) + '\)')
+            regex = re.findall(pattern, line)
+            # print (regex)
+            if regex:
+                psm_phos_dict[pep_seq+'_'+spectrum] = regex
+            else:
+                continue
+    return psm_phos_dict, psm_list
+
+
 def venn_diagram_gen(dictionary, title=''): # parameter could be a dictionary of proteins or peptides from different samples {'sample1': [], 'sample2': []}
     import matplotlib.pyplot as plt
     from matplotlib_venn import venn2, venn3
@@ -81,15 +103,19 @@ def venn_diagram_gen(dictionary, title=''): # parameter could be a dictionary of
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
 
     if len(dictionary) == 2:  # two samples for venn diagram
-        venn2(value_list_of_sets, set_labels=sample_name_list)
+        out = venn2(value_list_of_sets, set_labels=sample_name_list)
 
     elif len(dictionary) == 3:  # 3 samples for venn diagram
-        venn3(value_list_of_sets, set_labels=sample_name_list)
+        out = venn3(value_list_of_sets, set_labels=sample_name_list)
 
     else:
         print ('Error: only 2 or 3 comparison for venn diagram are accepted in this script.')
 
-    plt.title(title)
+
+    for t in out.set_labels: t.set_fontsize(22)
+    for t in out.subset_labels: t.set_fontsize(20)
+
+    fig.suptitle(title, fontsize=22)
     plt.show()
 
 
@@ -203,17 +229,19 @@ if __name__ == "__main__":
     # fasta_path = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
     # protein_dict=fasta_reader(fasta_path)
 
-    pep_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/peptide.tsv'
+    pep_tsv = 'G:/XS/wang/4_11_21_search_result/WT_1/peptide.tsv'
     # prot_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/protein.tsv'
-    # psm_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/psm.tsv'
+    psm_tsv = 'G:/XS/wang/0513_search_result/WT_phosopho2/psm.tsv'
     # # print (len(protein_tsv_reader(prot_tsv)))
     # print (len(spectra_num_counting(pep_tsv,psm_tsv,fasta_path,reverse=0)))
-    peptide_list = peptide_counting(pep_tsv)
-    phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
+    # peptide_list = peptide_counting(pep_tsv)
+    # phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
+    phos_psm_dict, psm_list = psm_phospho_reader(psm_tsv)
+    phos_psm_list = [k for k in phos_psm_dict.keys()]
     #print (phos_peptide_list)
-
-    venn_dict = {'All peptide': peptide_list,'phospho_pep':phos_peptide_list}
-    venn_diagram_gen(venn_dict,title='Brain peptides phosphoenrichment')
+    print (len(psm_list),len(phos_psm_list), phos_psm_dict)
+    venn_dict = {'All psm': psm_list,'phospho_psm':phos_psm_list}
+    venn_diagram_gen(venn_dict,title='spinal cord peptide phosphoenrichment')
     """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)
