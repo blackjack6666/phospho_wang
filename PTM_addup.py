@@ -5,6 +5,7 @@ import re
 import numpy as np
 from collections import defaultdict
 from tsv_reader import peptide_phospho_reader
+from tsv_reader import psm_reader, peptide_counting
 
 
 def ptm_reader(protein_seq_dict,uniprot_id,peptide_tsv,mod=79.9663):
@@ -244,7 +245,7 @@ def gen_cov_graph2(pep_list,
     :param mod:
     :return:
     """
-    from tsv_reader import psm_reader, peptide_counting
+
     from protein_coverage import fasta_reader, read_fasta_info_dict2
 
     if fasta_rev == 0:
@@ -333,35 +334,18 @@ def gen_cov_graph2(pep_list,
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
     from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader
-    fasta_file = 'D:/uic/lab/data/naba/uniprot-proteome_UP000000589_mouse_human_SNED1.fasta'
-    tryp_pep_tsv = 'D:/uic/lab/data/naba/12_18_search/163-2_Dec/peptide.tsv'
-    tryp_psm_tsv = 'D:/uic/lab/data/naba/12_18_search/163-2_Dec/psm.tsv'
-
-    # chymo_pep_tsv = 'D:/data/deep_proteome/20200915_ct_37C_240min/peptide.tsv'
-    # chymo_psm_tsv = 'D:/data/deep_proteome/20200915_ct_37C_240min/psm.tsv'
-    # tryp_pep_list,ct_pep_list = peptide_counting(tryp_pep_tsv),peptide_counting(chymo_pep_tsv)
-    # combined_pep_list = tryp_pep_list+ct_pep_list
-    tryp_pep_list = peptide_counting(tryp_pep_tsv)
-    psm_dict = psm_reader(tryp_psm_tsv)[0]
-    # psm_dict.update(psm_reader(chymo_psm_tsv)[0])
-
-    # gen_cov_graph2(tryp_pep_list,psm_dict,fasta_file,'Q8TER0','SNED1','SNED1_163_2_Dec.html')
-
-    #print (ptm_reader(protein_dict,'P28652',pep_tsv))
-    #print (pep_mod_pep_dict_gen(psm_tsv)['NSSAITSPK'])
-
-    # matched_pep_list = uniprot_id_matched_pep_getter(protein_dict,peptide_list)['P28652']
-    #print (ptm_sites_counting(matched_pep_list,pep_tsv,psm_tsv,mod=79.9663))
-
-    # pep_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/peptide.tsv'
-    # psm_tsv = 'D:/data/phospho_wang/2020-09-06/result/B_phos/psm.tsv'
+    fasta_file = 'D:/data/proteome_fasta/uniprot-proteome_UP000002494_rat_sp.fasta'
+    human_fasta = 'D:/data/pats/human_fasta/uniprot-proteome_UP000005640_sp_only.fasta'
+    trypsin_peplist = peptide_counting('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/peptide.tsv')
+    trypsin_psm_dict = psm_reader('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/psm.tsv')[0]
     #
-    gen_cov_graph(tryp_pep_tsv,
-                  tryp_psm_tsv,
-                  fasta_file,
-                  'Q70E20',
-                  'Sned1',
-                  'Sned1_mouse_163_2_Dec.html',
-                  PTM_dict={"P":"Proline hydroxylation","K":"Lysine hydroxylation"},
-                  fasta_rev=0,
-                  mod=15.9949)
+    # gen_cov_graph(tryp_pep_tsv,
+    #               tryp_psm_tsv,
+    #               fasta_file,
+    #               'Q70E20',
+    #               'Sned1',
+    #               'Sned1_mouse_163_2_Dec.html',
+    #               PTM_dict={"P":"Proline hydroxylation","K":"Lysine hydroxylation"},
+    #               fasta_rev=0,
+    #               mod=15.9949)
+    gen_cov_graph2(trypsin_peplist,trypsin_psm_dict,human_fasta,'P04406','GAPDH','P04406_trypsin_thermo.html')

@@ -214,6 +214,7 @@ if __name__ == "__main__":
     import seq_operation, aho_corasick
     from multiprocessing_naive_algorithym import creat_pep_ID_dict,creat_ID_pep_dict
     import pickle as ppp
+    from glob import glob
     '''
     SC_1_tsv_path = 'D:/data/phospho_wang/9_17_2019_search_result/SC_1/protein.tsv'
     SC_1_protein_set = (protein_tsv_reader(SC_1_tsv_path))  
@@ -229,19 +230,38 @@ if __name__ == "__main__":
     # fasta_path = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
     # protein_dict=fasta_reader(fasta_path)
 
-    pep_tsv = 'G:/XS/wang/4_11_21_search_result/WT_1/peptide.tsv'
+    psm_tsv = 'D:/data/native_protein_digestion/10282021/search_result/04h_tris/psm.tsv'
+    psm_tsv1 = 'D:/data/native_protein_digestion/10282021/search_result/20h_tris/psm.tsv'
+    pep_tsv = 'D:/data/native_protein_digestion/11182021/search_result_XS/29h_XS/peptide.tsv'
+    pep_tsv1 = 'D:/data/native_protein_digestion/11182021/search_result_RN/29h_RN/peptide.tsv'
+
+    prot_tsv = 'D:/data/native_protein_digestion/11182021/search_result_XS/combined_protein.tsv'
+    prot_tsv1 = 'D:/data/native_protein_digestion/11182021/search_result_RN/combined_protein.tsv'
+    prot_list, prot_list1 = protein_tsv_reader(prot_tsv),protein_tsv_reader(prot_tsv1)
     # prot_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/protein.tsv'
-    psm_tsv = 'G:/XS/wang/0513_search_result/WT_phosopho2/psm.tsv'
+    psm_dict,psm_dict1 = psm_reader(psm_tsv)[0],psm_reader(psm_tsv1)[0]
     # # print (len(protein_tsv_reader(prot_tsv)))
     # print (len(spectra_num_counting(pep_tsv,psm_tsv,fasta_path,reverse=0)))
-    # peptide_list = peptide_counting(pep_tsv)
+    psm_list = [each+str(i) for each in psm_dict for i in range(psm_dict[each])]
+    psm_list1 = [each+str(i) for each in psm_dict1 for i in range(psm_dict1[each])]
+    peplist,peplist1 = peptide_counting(pep_tsv),peptide_counting(pep_tsv1)
+    peplist_1h_list = peptide_counting('D:/data/native_protein_digestion/1h_1_native/peptide.tsv')
+
+    print ([each for each in peplist if each not in peplist1])
     # phos_peptide_list = [key for key in peptide_phospho_reader(pep_tsv)]
-    phos_psm_dict, psm_list = psm_phospho_reader(psm_tsv)
-    phos_psm_list = [k for k in phos_psm_dict.keys()]
+    # phos_psm_dict, psm_list = psm_phospho_reader(psm_tsv)
+    # phos_psm_list = [k for k in phos_psm_dict.keys()]
     #print (phos_peptide_list)
-    print (len(psm_list),len(phos_psm_list), phos_psm_dict)
-    venn_dict = {'All psm': psm_list,'phospho_psm':phos_psm_list}
-    venn_diagram_gen(venn_dict,title='spinal cord peptide phosphoenrichment')
+    # print (len(psm_list),len(phos_psm_list), phos_psm_dict)
+
+    total_peptide_list = [pep for file in
+                          glob('D:/data/native_protein_digestion/11182021/search_result_XS/*/peptide.tsv') for pep in
+                          peptide_counting(file)]
+    total_peptide_list_1 = [pep for file in
+                          glob('D:/data/native_protein_digestion/11182021/search_result_RN/*/peptide.tsv') for pep in
+                          peptide_counting(file)]
+    venn_dict = {'XS': total_peptide_list,'RN':total_peptide_list_1}
+    venn_diagram_gen(venn_dict,title='native digestion peptide total')
     """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)
