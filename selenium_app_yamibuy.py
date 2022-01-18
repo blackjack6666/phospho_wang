@@ -6,6 +6,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import requests
+import tweepy
+from twitter_keys import *
 
 
 def lauch_browser(url):
@@ -29,8 +31,38 @@ def login(email,password):
     password_ele.send_keys(password)
 
 
+consumer_key = "YCrxseJfs9KTAfVjPiQRhQ12W"
+consumer_secret = "AkTKh6veildAVCA5lKvUH33fvIHXv4DTvOxJ4Z5BhFXLIp2xGn"
+access_token = "1179053372676034560-Hat165CC9BHLM5GaQOUWen9pHSP72l"
+access_token_secret = "1uBIxPVwpqpd7En3HDyOhR2lpEYKiliwFfWuuhcBmfGmT"
+
+def send_twitter(message):
+    # twitter = tweepy.Client(
+    #     API_Key,
+    #     API_Key_Secret,
+    #     Access_Token,
+    #     Access_Token_Secret
+    # )
+    # response = twitter.create_tweet(text=message)
+    auth = tweepy.OAuthHandler(consumer_key,
+                               consumer_secret)
+    auth.set_access_token(access_token,
+                          access_token_secret)
+
+    api = tweepy.API(auth)
+
+    try:
+        api.verify_credentials()
+        print("Authentication OK")
+    except:
+        print("Error during authentication")
+
+
+
 if __name__=='__main__':
+    send_twitter('added cart and logged in')
     # yamibuy item URL
+
     url = 'https://www.yamibuy.com/zh/p/lan-zhou-noodels/1021086311?scene=item_search.result&index=1&bu_type=search&module_name=input&content=galanlang'
     driver = lauch_browser(url)
 
@@ -83,4 +115,7 @@ if __name__=='__main__':
         # login with username and password
         email,password = 'sxhlzcn@qq.com','sxh8836995...'
         login(email,password)
+
+        # send twitter
+        send_twitter('added cart and logged in')
 
