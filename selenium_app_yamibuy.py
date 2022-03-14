@@ -10,6 +10,7 @@ import tweepy
 from twitter_keys import *
 from twython import Twython
 
+
 def lauch_browser(url):
     ser = Service('C:/tools/chromedriver.exe')
     op = webdriver.ChromeOptions()
@@ -34,9 +35,13 @@ def login(email,password):
 def send_twitter(message):
     client = tweepy.Client(bearer_token=bearer_token, consumer_key=consumer_key, consumer_secret=consumer_secret,
                            access_token=access_token, access_token_secret=access_token_secret)
-
+    # api = tweepy.API(client)
     client.create_tweet(text=message)
+
+    # recipient_id = 'beefnoodles111'
+    # api.send_direct_message(recipient_id, message)
     print (f'sending tweets: {message}')
+
 
 if __name__=='__main__':
 
@@ -44,6 +49,7 @@ if __name__=='__main__':
 
     url = 'https://www.yamibuy.com/zh/p/lan-zhou-noodels/1021086311?scene=item_search.result&index=1&bu_type=search&module_name=input&content=galanlang'
     driver = lauch_browser(url)
+    item = url.split('content=')[1]
 
     quehuo_Xpath = "//button[@class='action-add_cart float_left button-solid-yellow-active']"
     que_huo = True
@@ -96,5 +102,7 @@ if __name__=='__main__':
         login(email,password)
 
         # send twitter
-        send_twitter('added cart and logged in')
+        send_twitter('%s added cart and logged in' % item)  # it will show 403 forbidden if tweet sent is same
 
+
+    driver.close()

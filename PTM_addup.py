@@ -331,13 +331,15 @@ def gen_cov_graph2(pep_list,
     f.close()
     return output_filename
 
+
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
-    from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader
-    fasta_file = 'D:/data/proteome_fasta/uniprot-proteome_UP000002494_rat_sp.fasta'
-    human_fasta = 'D:/data/pats/human_fasta/uniprot-proteome_UP000005640_sp_only.fasta'
-    trypsin_peplist = peptide_counting('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/peptide.tsv')
-    trypsin_psm_dict = psm_reader('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/psm.tsv')[0]
+    from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader, psm_reader_multiple_files
+    from glob import glob
+    fasta_file = 'F:/alanine_tailing/gfp_alanine_tail.fasta'
+    # human_fasta = 'D:/data/pats/human_fasta/uniprot-proteome_UP000005640_sp_only.fasta'
+    # trypsin_peplist = peptide_counting('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/peptide.tsv')
+    # trypsin_psm_dict = psm_reader('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/psm.tsv')[0]
     #
     # gen_cov_graph(tryp_pep_tsv,
     #               tryp_psm_tsv,
@@ -348,4 +350,10 @@ if __name__=='__main__':
     #               PTM_dict={"P":"Proline hydroxylation","K":"Lysine hydroxylation"},
     #               fasta_rev=0,
     #               mod=15.9949)
-    gen_cov_graph2(trypsin_peplist,trypsin_psm_dict,human_fasta,'P04406','GAPDH','P04406_trypsin_thermo.html')
+    # gen_cov_graph2(trypsin_peplist,trypsin_psm_dict,human_fasta,'P04406','GAPDH','P04406_trypsin_thermo.html')
+    peptide_tsv_files = glob('F:/alanine_tailing/search/open_search/TrpAT/*/peptide.tsv')
+    peptide_list = [pep for each in peptide_tsv_files for pep in peptide_counting(each)]
+
+    # peptide_list = peptide_counting('F:/alanine_tailing/search/03082022_chymo/Tarpt_HS_Chymo/peptide.tsv')
+    psm_dict = psm_reader_multiple_files(glob('F:/alanine_tailing/search/open_search/TrpAT/*/psm.tsv'))
+    gen_cov_graph2(peptide_list,psm_dict,fasta_file,'TrpAT-2_10A','GFP','TrpAT-2_10A_open.html')

@@ -136,6 +136,21 @@ def psm_reader(psm_path,fragpipe_ver=13.0):
     return pep_spec_count_dict, ret_pep_dict
 
 
+def psm_reader_multiple_files(psm_file_list,fragpipe_ver=13.0):
+    pep_spec_count_dict = defaultdict(int)
+    for psm_path in psm_file_list:
+        with open(psm_path, 'r') as f:
+            print ('reading psm from %s' % psm_path)
+            for i in range(1):
+                next(f)
+            for line in f:
+                line_split = line.split('\t')
+
+                pep_seq = line_split[2] if fragpipe_ver == 13.0 else line_split[1]
+                pep_spec_count_dict[pep_seq] += 1
+    return pep_spec_count_dict
+
+
 def spectra_num_counting(peptide_tsv, psm_tsv, fasta_path, reverse=0):
     import aho_corasick
     import multiprocessing_naive_algorithym
