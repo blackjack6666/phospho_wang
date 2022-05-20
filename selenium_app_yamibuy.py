@@ -47,7 +47,7 @@ if __name__=='__main__':
 
     # yamibuy item URL
 
-    url = 'https://www.yamibuy.com/zh/p/lan-zhou-noodels/1021086311?scene=item_search.result&index=1&bu_type=search&module_name=input&content=galanlang'
+    url = 'https://www.yamibuy.com/zh/p/mini-la-tiao-soybean-snacks-360g/1017041441?track=rec-branchpage-58-1017041441&scene=cms_channel.snack&bu_type=display&module_name=cms_component_items&index=58&content=1017041441'
     driver = lauch_browser(url)
     item = url.split('content=')[1]
 
