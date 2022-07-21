@@ -52,7 +52,7 @@ def uniprot_id_matched_pep_getter(protein_dict,pep_list):
     from multiprocessing_naive_algorithym import creat_ID_pep_dict
 
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
-    seq_line = seq_operation.creat_total_seq_line(seq_list)
+    seq_line = seq_operation.creat_total_seq_line(seq_list,sep='|')
     aho_automaton = aho_corasick.automaton_trie(pep_list)
     aho_result = aho_corasick.automaton_matching(aho_automaton, seq_line)
     pos_id_dict = seq_operation.read_position_ID_into_dict(uni_id_list, seq_list, seq_line)
@@ -336,7 +336,7 @@ if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
     from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader, psm_reader_multiple_files
     from glob import glob
-    fasta_file = 'F:/alanine_tailing/gfp_alanine_tail.fasta'
+    fasta_file = 'F:/alanine_tailing/20220709/uniprot-proteome_UP000000558_ecoli_GFPtruncation_alanine_rev.fasta'
     # human_fasta = 'D:/data/pats/human_fasta/uniprot-proteome_UP000005640_sp_only.fasta'
     # trypsin_peplist = peptide_counting('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/peptide.tsv')
     # trypsin_psm_dict = psm_reader('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/psm.tsv')[0]
@@ -351,9 +351,9 @@ if __name__=='__main__':
     #               fasta_rev=0,
     #               mod=15.9949)
     # gen_cov_graph2(trypsin_peplist,trypsin_psm_dict,human_fasta,'P04406','GAPDH','P04406_trypsin_thermo.html')
-    peptide_tsv_files = glob('F:/alanine_tailing/search/open_search/TrpAT/*/peptide.tsv')
+    peptide_tsv_files = glob('F:/alanine_tailing/20220709/combined_db_search/*/peptide.tsv')
     peptide_list = [pep for each in peptide_tsv_files for pep in peptide_counting(each)]
 
     # peptide_list = peptide_counting('F:/alanine_tailing/search/03082022_chymo/Tarpt_HS_Chymo/peptide.tsv')
-    psm_dict = psm_reader_multiple_files(glob('F:/alanine_tailing/search/open_search/TrpAT/*/psm.tsv'))
-    gen_cov_graph2(peptide_list,psm_dict,fasta_file,'TrpAT-2_10A','GFP','TrpAT-2_10A_open.html')
+    psm_dict = psm_reader_multiple_files(glob('F:/alanine_tailing/20220709/combined_db_search/*/psm.tsv'))
+    gen_cov_graph2(peptide_list,psm_dict,fasta_file,'GFP_YagN_truncation9_5A','GFP_YagN_truncation9_5A','GFP_YagN_truncation9_5A.html',fasta_rev=1)

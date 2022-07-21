@@ -221,6 +221,43 @@ def table_for_PW_analysis(protein_tsv_path):
         return [[line.split('\t')[3], line.split('\t')[5], int(line.split('\t')[17]), int(line.split('\t')[14])] for line in f]
 
 
+def peptide_filter_ecm(peptide_tsv, ecm_protein_set):
+    """
+    only return ECM peptides
+    :param peptide_tsv:
+    :param ecm_protein_set: could be whole ecm protein list or proteins in one category
+    :return:
+    """
+    peptide_list = []
+    with open(peptide_tsv, 'r') as f_o:
+        next(f_o)
+        for line in f_o:
+            protein_id = line.split("\t")[11]
+            if protein_id in ecm_protein_set:
+                peptide_list.append(line.split("\t")[0])
+    return peptide_list
+
+def combined_proteintsv_map(combined_protein_tsv):
+    """
+    map spectra count from combined protein tsv file to each file
+    :param combined_protein_tsv:
+    :return:
+    """
+    info_dict = {}
+    import pandas as pd
+    df = pd.read_csv(combined_protein_tsv,sep='\t',index_col=False)
+    # print (df.head)
+    protein_list = df['Protein ID']
+
+    for each_column in df.columns:
+        if 'Total Spectral Count' in each_column:
+            file_name = each_column.split(' ')[0]
+            spec_count_list = df[each_column]
+            protein_spec_dict = {i:j for i,j in zip(protein_list,spec_count_list) if j != 0}
+            info_dict[file_name] = protein_spec_dict
+    return info_dict
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matplotlib_venn import venn3, venn3_circles
@@ -230,24 +267,20 @@ if __name__ == "__main__":
     from multiprocessing_naive_algorithym import creat_pep_ID_dict,creat_ID_pep_dict
     import pickle as ppp
     from glob import glob
-    '''
-    SC_1_tsv_path = 'D:/data/phospho_wang/9_17_2019_search_result/SC_1/protein.tsv'
-    SC_1_protein_set = (protein_tsv_reader(SC_1_tsv_path))  
 
-    SC_2_tsv_path = 'D:/data/phospho_wang/9_17_2019_search_result/SC_2_3/SC_2/protein.tsv'
-    SC_2_protein_set = (protein_tsv_reader(SC_2_tsv_path))
-    SC_3_tsv_path = 'D:/data/phospho_wang/9_17_2019_search_result/SC_2_3/SC_3/protein.tsv'
-    SC_3_protein_set = (protein_tsv_reader(SC_3_tsv_path))
-    SC_combined_set = set(SC_1_protein_set+SC_2_protein_set+SC_3_protein_set)
-    print (len(SC_combined_set))
-    '''
+    # ecm_protein_df = pd.read_excel('D:/data/Naba_deep_matrisome/AnnotatedDeDuplicated.xlsx',index_col=0)
+    # ecm_protein_list = ecm_protein_df[ecm_protein_df['Division']=='Matrisome Associated'].index.tolist()
+    # print (len(ecm_protein_list))
+    # min1080_peptide = peptide_filter_ecm('D:/data/Naba_deep_matrisome/06272022/GFP_Seq_1080/peptide.tsv',ecm_protein_list)
+    # print (min1080_peptide)
+    # min120_peptide = peptide_filter_ecm('D:/data/Naba_deep_matrisome/06272022/GFP_Seq_0120/peptide.tsv',ecm_protein_list)
+    # min240_peptide = peptide_filter_ecm('D:/data/Naba_deep_matrisome/06272022/GFP_Seq_0240/peptide.tsv',ecm_protein_list)
+    # min15_peptide = peptide_filter_ecm('D:/data/Naba_deep_matrisome/06272022/GFP_Seq_0015/peptide.tsv',ecm_protein_list)
+    # min30_peptide = peptide_filter_ecm('D:/data/Naba_deep_matrisome/06272022/GFP_Seq_0030/peptide.tsv',ecm_protein_list)
+    # min60_peptide = peptide_filter_ecm('D:/data/Naba_deep_matrisome/06272022/GFP_Seq_0060/peptide.tsv',ecm_protein_list)
 
     # fasta_path = 'D:/data/proteome_fasta/uniprot-proteome_UP000005640.fasta'
     # protein_dict=fasta_reader(fasta_path)
-
-    prot_tsv = 'F:/deion_biotin/04_14_22/Holi1_ctr_search/protein.tsv'
-    prot_tsv1 = 'F:/deion_biotin/04_14_22/Fluc_ctr_search/protein.tsv'
-    prot_list, prot_list1 = protein_tsv_reader(prot_tsv),protein_tsv_reader(prot_tsv1)
 
     # prot_tsv = 'D:/data/deep_proteome/20200716/T_5min_search/protein.tsv'
     # psm_dict,psm_dict1 = psm_reader(psm_tsv)[0],psm_reader(psm_tsv1)[0]
@@ -266,8 +299,8 @@ if __name__ == "__main__":
     # total_peptide_list_1 = [pep for file in
     #                       glob('D:/data/native_protein_digestion/11182021/search_result_RN/*/peptide.tsv') for pep in
     #                       peptide_counting(file)]
-    venn_dict = {'Hoil1_control':prot_list ,'Fluc_control':prot_list1}
-    venn_diagram_gen(venn_dict,title='Protein difference between Hoil1_control and Fluc_control')
+    venn_dict = {}
+    venn_diagram_gen(venn_dict,title='everything else vs. YHP')
     """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)
