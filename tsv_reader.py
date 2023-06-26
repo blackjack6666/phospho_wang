@@ -258,6 +258,31 @@ def combined_proteintsv_map(combined_protein_tsv):
     return info_dict
 
 
+def my_replace(match_obj):
+    match_obj = match_obj.group()
+    matched_aa = match_obj[0]
+    if matched_aa != 'n':
+        return matched_aa  # gives back the first element of matched object as string
+    else:
+        # if first match is n, then n acetylation, get rid of n
+        return ''
+
+
+def psm_from_pin(pin_file):
+    # get psm list from pin file
+    regex_pat = '\w{1}\[\d+\.?\d+\]'
+    psm_list = []
+    psm_dict = defaultdict(int)
+    with open(pin_file,'r') as f_o:
+        next(f_o)
+        for line in f_o:
+            psm = line.split('\t')[19][2:-2]
+            clean_psm = re.sub(regex_pat,my_replace,psm)
+            psm_list.append(clean_psm)
+            psm_dict[clean_psm]+=1
+    return psm_list,psm_dict
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matplotlib_venn import venn3, venn3_circles
@@ -299,8 +324,13 @@ if __name__ == "__main__":
     # total_peptide_list_1 = [pep for file in
     #                       glob('D:/data/native_protein_digestion/11182021/search_result_RN/*/peptide.tsv') for pep in
     #                       peptide_counting(file)]
-    venn_dict = {}
-    venn_diagram_gen(venn_dict,title='everything else vs. YHP')
+    total_psm = []
+    gene_f_psm_dict_of_dict = ppp.load(open('F:/fred_time_lapse/analysis/gene_f_psm_dict_of_dict_1219.p', 'rb'))
+    for gene in gene_f_psm_dict_of_dict:
+        total_psm += gene_f_psm_dict_of_dict[gene]['144A_15']
+    peptide_list = peptide_counting('F:/fred_time_lapse/05012023/peptide.tsv')
+    venn_dict = {'dia_nn':set(total_psm),'dia_umpire':peptide_list}
+    venn_diagram_gen(venn_dict,title='144A_15 DIA_nn vs. DIA_umpire')
     """
     uni_id_list, seq_list = seq_operation.extract_UNID_and_seq(protein_dict)
     seq_line = seq_operation.creat_total_seq_line(seq_list)

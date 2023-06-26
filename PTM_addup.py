@@ -334,9 +334,11 @@ def gen_cov_graph2(pep_list,
 
 if __name__=='__main__':
     from protein_coverage import fasta_reader,read_fasta_info_dict2
-    from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader, psm_reader_multiple_files
+    from tsv_reader import pep_mod_pep_dict_gen,peptide_counting, psm_reader, psm_reader_multiple_files,psm_from_pin
     from glob import glob
-    fasta_file = 'F:/alanine_tailing/20220709/uniprot-proteome_UP000000558_ecoli_GFPtruncation_alanine_rev.fasta'
+    import pandas as pd
+    from collections import Counter
+    fasta_file = 'F:/alanine_tailing/2022_10_28_in_gel/arfa_truncation_alanines.fasta'
     # human_fasta = 'D:/data/pats/human_fasta/uniprot-proteome_UP000005640_sp_only.fasta'
     # trypsin_peplist = peptide_counting('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/peptide.tsv')
     # trypsin_psm_dict = psm_reader('D:/data/deep_proteome/different_protease/tryp_30_thermo_30/psm.tsv')[0]
@@ -351,9 +353,27 @@ if __name__=='__main__':
     #               fasta_rev=0,
     #               mod=15.9949)
     # gen_cov_graph2(trypsin_peplist,trypsin_psm_dict,human_fasta,'P04406','GAPDH','P04406_trypsin_thermo.html')
-    peptide_tsv_files = glob('F:/alanine_tailing/20220709/combined_db_search/*/peptide.tsv')
-    peptide_list = [pep for each in peptide_tsv_files for pep in peptide_counting(each)]
-
+    # peptide_tsv_files = glob('F:/alanine_tailing/2022_11_11/arfa_search/ANS/ANS.pin')
+    # peptide_list = [pep for each in peptide_tsv_files for pep in peptide_counting(each)]
+    # psm_list = [psm for each in peptide_tsv_files for psm in psm_from_pin(each)[0]]
     # peptide_list = peptide_counting('F:/alanine_tailing/search/03082022_chymo/Tarpt_HS_Chymo/peptide.tsv')
-    psm_dict = psm_reader_multiple_files(glob('F:/alanine_tailing/20220709/combined_db_search/*/psm.tsv'))
-    gen_cov_graph2(peptide_list,psm_dict,fasta_file,'GFP_YagN_truncation9_5A','GFP_YagN_truncation9_5A','GFP_YagN_truncation9_5A.html',fasta_rev=1)
+    # psm_dict = psm_reader_multiple_files(glob('F:/alanine_tailing/2022_10_28/arfa_db/*/psm.tsv'))
+    # psm_dict = psm_from_pin('F:/alanine_tailing/2022_11_11/arfa_search/ANS/ANS.pin')[1]
+
+    # from DIANN
+    # df = pd.read_csv('F:/alanine_tailing/2022_11_29/DIA/report-first-pass.tsv',sep='\t')
+    # print (len(df['Protein.Group'].unique()))
+    # psm_list = df[(df['Protein.Group']=='GFP_ArfA_RNAse_III_truncation1')&(df['Run']=='ANH')]['Stripped.Sequence'].tolist()
+    # psm_dict = Counter(psm_list)
+    # gen_cov_graph2(psm_list,psm_dict,fasta_file,'GFP_ArfA_RNAse_III_truncation1_5A','GFP_ArfA_RNAse_III_truncation1_5A',
+    #                'F:/alanine_tailing/2022_11_29/truncation5A_ANH.html',fasta_rev=0)
+
+    base_path = 'G:/XS/alanine_tailing/2022_11_29/psm_files/'
+    psm_files = glob(base_path+'psm_A*.tsv')
+    for psm_f in psm_files:
+        print (psm_f)
+        sample = psm_f.split('\\')[-1].split('psm_')[1].split('.tsv')[0]
+        psm_dict = psm_reader(psm_f)[0]
+        peptide_list = [p for p in psm_dict]
+        gen_cov_graph2(peptide_list,psm_dict,fasta_file,'GFP_ArfA_RNAse_III_notruncation','GFP_ArfA_RNAse_III_notruncation',
+                       base_path+sample+'.html',fasta_rev=0)
